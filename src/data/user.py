@@ -26,3 +26,6 @@ def create_user_service(user: UserCreate, db: Session):
 
 def get_user_by_email(email: str, db: Session):
     return db.query(UserSchema).filter(UserSchema.email == email).first()
+
+def get_user_by_id(user_id: str, db: Session):
+    return db.query(UserSchema).filter(UserSchema.user_id == user_id).first() 

@@ -1,11 +1,10 @@
 from http import HTTPStatus
-from http.client import HTTPException
 import bcrypt
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from fastapi.encoders import jsonable_encoder
-from src.data.user import create_user_service, get_user_by_email
+from src.data.user import create_user_service, get_user_by_email, get_user_by_id
 
 from src.models.user import LoginUserBody, UserCreate
 
@@ -24,8 +23,6 @@ def login(user: LoginUserBody, db: Session = Depends(get_db)):
     password = user.password
 
     selected_user = get_user_by_email(email, db)
-
-    print(selected_user)
 
     if(selected_user==None):
         return jsonable_encoder({
@@ -48,3 +45,17 @@ def login(user: LoginUserBody, db: Session = Depends(get_db)):
                 "msg": "User not authorized"
             }
         )
+
+@router.get("/get_role_by_id/{user_id}")
+def get_role_by_id(user_id: str, db: Session = Depends(get_db)):
+    selected_user = get_user_by_id(user_id, db)
+
+    if(selected_user==None):
+        return jsonable_encoder({
+            "status": HTTPStatus.NOT_FOUND,
+            "msg": "User not found"
+        })
+    else:
+        return jsonable_encoder({
+            "role": selected_user.role
+        })
