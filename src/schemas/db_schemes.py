@@ -1,3 +1,4 @@
+from email.policy import default
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from database import Base
 from src.models.user import Roles
@@ -25,6 +26,7 @@ class Article(Base):
     sub_header = Column(String(500), index=True)
     article = Column(String(750), index=True)
     user = Column(String(200), ForeignKey("users.user_id"), nullable=False, index=True)
+    status = Column(Boolean, index=True, default=False)
 
     # statements = relationship("Statement", back_populates="article")
 
