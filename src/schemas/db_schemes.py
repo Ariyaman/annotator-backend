@@ -1,5 +1,5 @@
 from email.policy import default
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text
 from database import Base
 from src.models.user import Roles
 from sqlalchemy.orm import relationship
@@ -24,9 +24,9 @@ class Article(Base):
     __tablename__ = "articles"
 
     article_id = Column(Integer, index=True, primary_key=True)
-    header = Column(String(200), index=True)
-    sub_header = Column(String(200), index=True)
-    new = Column(String(200), index=True)
+    header = Column(Text(length=1000), index=False)
+    sub_header = Column(Text(length=1000), index=False)
+    news = Column(Text(length=1000), index=False)
     user_fk = Column(String(200), ForeignKey(
         "users.user_id"), nullable=False, index=True)
     status = Column(Boolean, index=True, default=False)
@@ -48,6 +48,6 @@ class Statement(Base):
     sadness = Column(Integer, index=True)
     sentiment = Column(Integer, index=True)
     surprise = Column(Integer, index=True)
-    sentence = Column(String(200), nullable=True, index=True)
+    sentence = Column(Text(length=1000), nullable=True, index=False)
     company = Column(String(200), nullable=True, index=True)
     article_fk = Column(Integer, ForeignKey("articles.article_id"), index=True, nullable=False)
