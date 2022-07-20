@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import FastAPI 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,4 +21,4 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Server up"}
+    return "Nothing to see here. Please do not break my server."
