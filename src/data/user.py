@@ -7,16 +7,17 @@ from src.schemas.db_schemes import UserSchema
 
 
 def create_user_service(user: UserCreate, db: Session):
-    hashed_password = bcrypt.hashpw(str(user.password).encode("utf-8"), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(
+        str(user.password).encode("utf-8"), bcrypt.gensalt())
     db_user = UserSchema(
-        user_id = str(uuid4()),
-        name = user.name,
-        email = user.email,
-        hashed_password = hashed_password,
-        gender = Gender[user.gender].name,
-        role = Roles.user.name,
-        age = user.age,
-        profession = user.profession
+        user_id=str(uuid4()),
+        name=user.name,
+        email=user.email,
+        hashed_password=hashed_password,
+        gender=Gender[user.gender].name,
+        role=Roles.user.name,
+        age=user.age,
+        profession=user.profession
     )
     db.add(db_user)
     db.commit()
@@ -24,11 +25,14 @@ def create_user_service(user: UserCreate, db: Session):
 
     return db_user
 
+
 def get_user_by_email(email: str, db: Session):
     return db.query(UserSchema).filter(UserSchema.email == email).first()
 
+
 def get_user_by_id(user_id: str, db: Session):
-    return db.query(UserSchema).filter(UserSchema.user_id == user_id).first() 
+    return db.query(UserSchema).filter(UserSchema.user_id == user_id).first()
+
 
 def get_all_users(db: Session):
     return db.query(UserSchema).offset(0).limit(100).all()
