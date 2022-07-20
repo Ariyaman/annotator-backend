@@ -1,57 +1,50 @@
 from http import HTTPStatus
 from http.client import HTTPException
-from uuid import uuid4
 import bcrypt
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from fastapi.encoders import jsonable_encoder
+from src.data.user import create_user_service, get_user_by_email
 
-from src.models.user import Gender, LoginUserBody, Roles, UserCreate
-from src.schemas.db_schemes import UserSchema
+from src.models.user import LoginUserBody, UserCreate
 
 
 router = APIRouter()
 
 @router.post("/signup")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    hashed_password = bcrypt.hashpw(str(user.password).encode("utf-8"), bcrypt.gensalt())
-    db_user = UserSchema(
-        user_id = str(uuid4()),
-        name = user.name,
-        email = user.email,
-        hashed_password = hashed_password,
-        gender = Gender[user.gender].name,
-        role = Roles.user.name,
-        age = user.age,
-        profession = user.profession
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    create_user_service(user, db)
 
-    return db_user
+    return jsonable_encoder({"status": {"status_code": HTTPStatus.CREATED}})
 
 @router.post("/login")
 def login(user: LoginUserBody, db: Session = Depends(get_db)):
     email = user.email
     password = user.password
 
-    selected_user = db.query(UserSchema).filter(UserSchema.email == email).first()
+    selected_user = get_user_by_email(email, db)
 
-    if(bcrypt.checkpw(str(password).encode("utf-8"), str(selected_user.hashed_password).encode("utf-8"))):
+    print(selected_user)
+
+    if(selected_user==None):
+        return jsonable_encoder({
+            "status": HTTPStatus.NOT_FOUND,
+            "msg": "User not found"
+        })
+    elif(bcrypt.checkpw(str(password).encode("utf-8"), str(selected_user.hashed_password).encode("utf-8"))):
         return jsonable_encoder(
             {
                 "role": selected_user.role,
                 "user_id": selected_user.user_id,
-                "status": {
-                    "status_code": HTTPStatus.OK
-                }
+                "status": HTTPStatus.CREATED,
+                "msg": "User created"
             }
         )
     else:
         return jsonable_encoder(
             {
-                "status": HTTPException(HTTPStatus.UNAUTHORIZED, "Unauthorized")
+                "status": HTTPStatus.UNAUTHORIZED,
+                "msg": "User not authorized"
             }
         )
