@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 from database import Base, engine
-from src.endpoints import user
+from src.router import user
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,4 +20,4 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return "Nothing to see here. Please do not break my server."
+    return "Nothing to see here. Please do not break my back."

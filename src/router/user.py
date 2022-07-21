@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from database import get_db
-from src.data.user import create_user_service, get_user_by_email, get_user_by_id
+from src.services.user import create_user_service, get_user_by_email, get_user_by_id
 
 from src.models.user import LoginUserBody, UserCreate
 
