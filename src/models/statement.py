@@ -17,3 +17,18 @@ class Statement(BaseModel):
     overall: bool
     sentence: Optional[str] = None
     company: Optional[str] = None
+
+
+class CreateStatement(BaseModel):
+    anger: int
+    contempt: int
+    disgust: int
+    fear: int
+    happiness: int
+    neutral: int
+    sadness: int
+    sentiment: int
+    surprise: int
+    overall: bool
+    sentence: Optional[str] = None
+    company: Optional[str] = None

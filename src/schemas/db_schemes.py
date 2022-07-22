@@ -20,7 +20,7 @@ class UserSchema(Base):
     articles = relationship("Article", backref="users")
 
 
-class Article(Base):
+class ArticleSchema(Base):
     __tablename__ = "articles"
 
     article_id = Column(Integer, index=True, primary_key=True)
@@ -34,7 +34,7 @@ class Article(Base):
     statements_foreign = relationship("Statement", backref="articles")
 
 
-class Statement(Base):
+class StatementSchema(Base):
     __tablename__ = "statements"
 
     statement_id = Column(String(200), primary_key=True, index=True)
