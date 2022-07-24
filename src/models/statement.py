@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class Statement(BaseModel):
-    id: Optional[UUID] = None
+    statment_id: Optional[UUID] = None
     anger: int
     contempt: int
     disgust: int
@@ -17,6 +17,7 @@ class Statement(BaseModel):
     overall: bool
     sentence: Optional[str] = None
     company: Optional[str] = None
+    article_fk: str
 
 
 class CreateStatement(BaseModel):

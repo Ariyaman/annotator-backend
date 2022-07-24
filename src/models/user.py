@@ -16,7 +16,7 @@ class Roles(Enum):
 
 
 class User(BaseModel):
-    id: Optional[UUID] = None
+    user_id: Optional[UUID] = None
     name: Optional[str] = None
     email: str
     password: str

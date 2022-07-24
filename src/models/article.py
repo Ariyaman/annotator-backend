@@ -5,12 +5,13 @@ from src.models.statement import Statement
 
 
 class Article(BaseModel):
-    id: int
+    article_id: int
     header: str
-    subheader: str
+    sub_header: str
     article: str
-    statements: list[Statement] = []
-    user_id: str
+    statements_foreign: list[Statement] = []
+    user_fk: str
+    status: bool
 
 
 class ArticleResponseBody(BaseModel):

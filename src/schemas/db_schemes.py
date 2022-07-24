@@ -1,4 +1,3 @@
-from email.policy import default
 from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text
 from database import Base
 from src.models.user import Roles
