@@ -33,3 +33,4 @@ class CreateStatement(BaseModel):
     overall: bool
     sentence: Optional[str] = None
     company: Optional[str] = None
+    article_fk: str

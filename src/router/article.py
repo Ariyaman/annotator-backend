@@ -5,9 +5,11 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from database import get_db
+from src.models.article import ArticleResponseBody
+from src.models.statement import CreateStatement
 
 from src.services.article import get_all_articles_service, get_article_by_id_service
-from src.services.statement import get_statements_by_article_id
+from src.services.statement import create_statement_service, get_statements_by_article_id
 
 
 router = APIRouter()
@@ -45,7 +47,7 @@ def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_d
         temp_statement = {}
         emp_statements = []
 
-        for i in range(0, statements.lenght):
+        for i in statements:
             if(i.overall):
                 temp_statement["overallAnger"] = i.anger
                 temp_statement["overallContempt"] = i.contempt
@@ -90,3 +92,50 @@ def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_d
             }),
             HTTPStatus.OK
         )
+
+@router.post("/mark_article")
+def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
+    article = get_article_by_id_service(db, response.id)
+
+    if(article.user_fk != response.user):
+        return JSONResponse(jsonable_encoder({
+            "msg": "User not authorized"
+    }), HTTPStatus.UNAUTHORIZED)
+    
+    overall_statement = CreateStatement(
+        anger = response.overallAnger,
+        contempt = response.overallContempt,
+        disgust = response.overallDisgust,
+        fear = response.overallFear,
+        happiness = response.overallHappiness,
+        neutral = response.overallNeutral,
+        sadness = response.overallSadness,
+        sentiment = response.overallSentiment,
+        surprise = response.overallSurprise,
+        overall = True,
+        article_fk = article.article_id
+    )
+    create_statement_service(db, overall_statement)
+
+    for i in response.empStatements:
+        minor_statement = CreateStatement(
+            anger = i.anger,
+            article_fk = article.article_id,
+            company = i.company,
+            contempt = i.contempt,
+            disgust = i.disgust,
+            fear = i.fear,
+            happiness = i.happiness,
+            neutral = i.neutral,
+            overall = False,
+            sadness = i.sadness,
+            sentence = i.sentence,
+            sentiment = i.sentinment,
+            surprise = i.surprise
+        )
+
+        create_statement_service(db, minor_statement)
+    
+    return JSONResponse(jsonable_encoder({
+        "msg": "Article marked"
+    }), HTTPStatus.CREATED)
