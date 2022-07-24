@@ -93,6 +93,7 @@ def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_d
             HTTPStatus.OK
         )
 
+
 @router.post("/mark_article")
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     article = get_article_by_id_service(db, response.id)
@@ -101,41 +102,41 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
         return JSONResponse(jsonable_encoder({
             "msg": "User not authorized"
     }), HTTPStatus.UNAUTHORIZED)
-    
+
     overall_statement = CreateStatement(
-        anger = response.overallAnger,
-        contempt = response.overallContempt,
-        disgust = response.overallDisgust,
-        fear = response.overallFear,
-        happiness = response.overallHappiness,
-        neutral = response.overallNeutral,
-        sadness = response.overallSadness,
-        sentiment = response.overallSentiment,
-        surprise = response.overallSurprise,
-        overall = True,
-        article_fk = article.article_id
+        anger=response.overallAnger,
+        contempt=response.overallContempt,
+        disgust=response.overallDisgust,
+        fear=response.overallFear,
+        happiness=response.overallHappiness,
+        neutral=response.overallNeutral,
+        sadness=response.overallSadness,
+        sentiment=response.overallSentiment,
+        surprise=response.overallSurprise,
+        overall=True,
+        article_fk=article.article_id
     )
     create_statement_service(db, overall_statement)
 
     for i in response.empStatements:
         minor_statement = CreateStatement(
-            anger = i.anger,
-            article_fk = article.article_id,
-            company = i.company,
-            contempt = i.contempt,
-            disgust = i.disgust,
-            fear = i.fear,
-            happiness = i.happiness,
-            neutral = i.neutral,
-            overall = False,
-            sadness = i.sadness,
-            sentence = i.sentence,
-            sentiment = i.sentinment,
-            surprise = i.surprise
+            anger=i.anger,
+            article_fk=article.article_id,
+            company=i.company,
+            contempt=i.contempt,
+            disgust=i.disgust,
+            fear=i.fear,
+            happiness=i.happiness,
+            neutral=i.neutral,
+            overall=False,
+            sadness=i.sadness,
+            sentence=i.sentence,
+            sentiment=i.sentinment,
+            surprise=i.surprise
         )
 
         create_statement_service(db, minor_statement)
-    
+
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
