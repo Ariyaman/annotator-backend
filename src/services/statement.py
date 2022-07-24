@@ -2,7 +2,7 @@ from uuid import uuid4
 from sqlalchemy.orm import Session
 from src.models.statement import CreateStatement
 
-from src.schemas.db_schemes import StatementSchema
+from src.schemas.db_schemes import ArticleSchema, StatementSchema
 
 
 def get_statement_by_id(db: Session, statement_id: str):
@@ -35,7 +35,8 @@ def create_statement_service(db: Session, statement: CreateStatement):
 
 
 def get_statements_by_article_id(db: Session, article_id: int):
-    return db.query(StatementSchema).filter(StatementSchema.article_fk == article_id).all()
+    article = db.query(ArticleSchema).filter(ArticleSchema.article_id == article_id).first()
+    return article.statements_foreign
 
 
 def delete_by_article_id(db: Session, article_id: int):
