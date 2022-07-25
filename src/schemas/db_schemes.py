@@ -23,9 +23,9 @@ class ArticleSchema(Base):
     __tablename__ = "articles"
 
     article_id = Column(Integer, index=True, primary_key=True)
-    header = Column(Text(2000), index=False)
-    sub_header = Column(Text(4000), index=False)
-    news = Column(Text(length=50000), index=False)
+    header = Column(Text(length=300), index=False)
+    sub_header = Column(Text(length=1000), index=False)
+    news = Column(Text(length=33000), index=False)
     user_fk = Column(String(200), ForeignKey(
         "users.user_id"), nullable=False, index=True)
     status = Column(Boolean, index=True, default=False)
