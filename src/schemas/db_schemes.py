@@ -10,7 +10,7 @@ class UserSchema(Base):
     user_id = Column(String(200), primary_key=True, index=True)
     name = Column(String(200), index=True)
     email = Column(String(200), unique=True, index=True)
-    hashed_password = Column(String(500))
+    hashed_password = Column(String(100))
     gender = Column(String(200), index=True)
     role = Column(String(200), index=True, default=Roles.superuser)
     age = Column(Integer, index=True)
@@ -25,7 +25,7 @@ class ArticleSchema(Base):
     article_id = Column(Integer, index=True, primary_key=True)
     header = Column(Text(length=1000), index=False)
     sub_header = Column(Text(length=1000), index=False)
-    news = Column(Text(length=1000), index=False)
+    news = Column(Text(length=2000), index=False)
     user_fk = Column(String(200), ForeignKey(
         "users.user_id"), nullable=False, index=True)
     status = Column(Boolean, index=True, default=False)
