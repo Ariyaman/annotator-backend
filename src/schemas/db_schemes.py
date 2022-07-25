@@ -16,7 +16,7 @@ class UserSchema(Base):
     age = Column(Integer, index=True)
     profession = Column(String(200), index=True)
 
-    articles = relationship("Article", backref="users")
+    articles = relationship("ArticleSchema", backref="users")
 
 
 class ArticleSchema(Base):
@@ -30,7 +30,7 @@ class ArticleSchema(Base):
         "users.user_id"), nullable=False, index=True)
     status = Column(Boolean, index=True, default=False)
 
-    statements_foreign = relationship("Statement", backref="articles")
+    statements_foreign = relationship("StatementSchema", backref="articles")
 
 
 class StatementSchema(Base):

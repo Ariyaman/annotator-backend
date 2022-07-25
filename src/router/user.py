@@ -36,7 +36,6 @@ def login(user: LoginUserBody, db: Session = Depends(get_db)):
         )
     elif(bcrypt.checkpw(str(password).encode("utf-8"), str(selected_user.hashed_password).encode("utf-8"))):
         response = JSONResponse(content=jsonable_encoder({
-            "role": selected_user.role,
             "user_id": selected_user.user_id,
         }),
             status_code=HTTPStatus.OK
@@ -64,5 +63,6 @@ def get_role_by_id(user_id: str, db: Session = Depends(get_db)):
         )
     else:
         return JSONResponse(jsonable_encoder({
-            "role": selected_user.role
+            "role": selected_user.role,
+            "name": selected_user.name
         }))
