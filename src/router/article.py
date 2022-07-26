@@ -9,7 +9,7 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import change_status_to_complete, get_all_articles_service, get_article_by_id_service
+from src.services.article import change_status_to_complete, get_all_articles_service, get_article_by_id_service, set_articles
 from src.services.statement import create_statement_service, get_statements_by_article_id
 
 
@@ -155,3 +155,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
+
+@router.get("/populate_articles/{user_id}")
+def populate_articles(user_id: str, db: Session = Depends(get_db)):
+    set_articles(db, user_id)

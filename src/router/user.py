@@ -17,7 +17,6 @@ router = APIRouter()
 @router.post("/signup")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     user = create_user_service(user, db)
-    set_articles(db, user.user_id)
 
     return JSONResponse(jsonable_encoder({"msg": "User created"}), HTTPStatus.CREATED)
 
