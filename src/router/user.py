@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from http.client import NOT_FOUND
 import bcrypt
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse

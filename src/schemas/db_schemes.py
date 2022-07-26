@@ -50,3 +50,11 @@ class StatementSchema(Base):
     sentence = Column(Text(length=1000), nullable=True, index=False)
     company = Column(String(200), nullable=True, index=True)
     article_fk = Column(Integer, ForeignKey("articles.article_id"), index=True, nullable=False)
+
+class HolderSchema(Base):
+    __tablename__ = "holder"
+
+    temp_id = Column(Integer, index=True, primary_key=True)
+    header = Column(Text(length=300))
+    sub_header = Column(Text(length=1000))
+    news = Column(Text(length=33000))
