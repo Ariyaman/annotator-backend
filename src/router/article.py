@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from http.client import NOT_FOUND
 from re import S
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -29,7 +30,8 @@ def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
         temp_data = {
             "header": article.header,
             "sub_header": article.sub_header,
-            "status": article.status
+            "status": article.status,
+            "article_id": article.article_id
         }
 
         compact_result.append(temp_data)
@@ -40,6 +42,10 @@ def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
 @router.get("/article/{user_id}/{article_id}")
 def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_db)):
     article = get_article_by_id_service(db, article_id)
+
+    if(article is None):
+        return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
+
     auth: bool = article.user_fk == user_id
     statements = get_statements_by_article_id(db, article_id)
 
