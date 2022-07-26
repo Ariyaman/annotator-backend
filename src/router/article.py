@@ -99,7 +99,8 @@ def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_d
             "header": article.header,
             "sub_header": article.sub_header,
             "news": article.news,
-            "statements": statements
+            "statements": statements,
+            "status": article.status
             }),
             HTTPStatus.OK
         )
