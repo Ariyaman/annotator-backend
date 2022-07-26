@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
 from src.router import user, article
-from src.schemas.db_schemes import HolderSchema
+from src.schemas.db_schemes import ArticleSchema, HolderSchema
+from src.services.holder import get_all_articles_holder_service
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,8 +27,7 @@ app.add_middleware(
 async def root():
     return "Nothing to see here. Please do not break my back."
 
-# TODO: Create a protected endpoint to get file
-
+# TODO: Create a endpoint to set file in db
 # @app.get("/test")
 # def test(db: Session = Depends(get_db)):
 #     file = open("title_synopsis_article.csv", "r")
