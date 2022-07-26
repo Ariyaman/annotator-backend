@@ -9,12 +9,17 @@ gunicorn==20.1.0
 h11==0.13.0
 httptools==0.4.0
 idna==3.3
+numpy==1.23.1
+pandas==1.4.3
 pycodestyle==2.8.0
 pycparser==2.21
 pydantic==1.9.1
 PyMySQL==1.0.2
+python-dateutil==2.8.2
 python-dotenv==0.20.0
+pytz==2022.1
 PyYAML==6.0
+six==1.16.0
 sniffio==1.2.0
 SQLAlchemy==1.4.39
 starlette==0.19.1
