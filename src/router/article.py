@@ -9,7 +9,7 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import get_all_articles_service, get_article_by_id_service
+from src.services.article import change_status_to_complete, get_all_articles_service, get_article_by_id_service
 from src.services.statement import create_statement_service, get_statements_by_article_id
 
 
@@ -19,7 +19,6 @@ router = APIRouter()
 @router.get("/article/headers/{user_id}/{page}")
 def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
     article_metadata = get_all_articles_service(db, user_id, (page - 1) * 10, 10)
-    print(article_metadata[0].header)
 
     if(not article_metadata or article_metadata is None):
         return JSONResponse(jsonable_encoder({"msg": "Articles not found"}), HTTPStatus.NOT_FOUND)
@@ -108,7 +107,7 @@ def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_d
 
 @router.post("/mark_article")
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
-    article = get_article_by_id_service(db, response.id)
+    article = get_article_by_id_service(db, int(response.id))
 
     if(article.user_fk != response.user):
         return JSONResponse(jsonable_encoder({
@@ -126,28 +125,31 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
         sentiment=response.overallSentiment,
         surprise=response.overallSurprise,
         overall=True,
-        article_fk=article.article_id
+        article_fk=int(article.article_id)
     )
     create_statement_service(db, overall_statement)
 
     for i in response.empStatements:
+        print(i)
         minor_statement = CreateStatement(
-            anger=i.anger,
-            article_fk=article.article_id,
-            company=i.company,
-            contempt=i.contempt,
-            disgust=i.disgust,
-            fear=i.fear,
-            happiness=i.happiness,
-            neutral=i.neutral,
+            anger=i['anger'],
+            article_fk=int(article.article_id),
+            company=i['company'],
+            contempt=i['contempt'],
+            disgust=i['disgust'],
+            fear=i['fear'],
+            happiness=i['happiness'],
+            neutral=i['neutral'],
             overall=False,
-            sadness=i.sadness,
-            sentence=i.sentence,
-            sentiment=i.sentinment,
-            surprise=i.surprise
+            sadness=i['sadness'],
+            sentence=i['sentence'],
+            sentiment=i['sentiment'],
+            surprise=i['surprise']
         )
 
         create_statement_service(db, minor_statement)
+    
+    change_status_to_complete(db, int(article.article_id))
 
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"

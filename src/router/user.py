@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from database import get_db
+from src.services.article import set_articles
 from src.services.user import create_user_service, get_user_by_email, get_user_by_id
 
 from src.models.user import LoginUserBody, UserCreate
@@ -15,7 +16,8 @@ router = APIRouter()
 
 @router.post("/signup")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    create_user_service(user, db)
+    user = create_user_service(user, db)
+    set_articles(db, user.user_id)
 
     return JSONResponse(jsonable_encoder({"msg": "User created"}), HTTPStatus.CREATED)
 

@@ -15,7 +15,7 @@ class Article(BaseModel):
 
 
 class ArticleResponseBody(BaseModel):
-    id: int
+    id: str
     overallAnger: int
     overallContempt: int
     overallDisgust: int
