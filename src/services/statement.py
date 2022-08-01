@@ -13,18 +13,12 @@ def create_statement_service(db: Session, statement: CreateStatement):
     statement_db = StatementSchema(
         statement_id=str(uuid4()),
         overall=statement.overall,
-        anger=statement.anger,
-        contempt=statement.contempt,
-        disgust=statement.disgust,
-        fear=statement.fear,
-        happiness=statement.happiness,
-        neutral=statement.happiness,
-        sadness=statement.sadness,
-        sentiment=statement.sentiment,
-        surprise=statement.surprise,
-        sentence=statement.sentence,
+        emotion = statement.emotion,
+        sentiment = statement.sentiment,
+        sentence = statement.sentence,
         company=statement.company,
-        article_fk=statement.article_fk
+        article_fk=statement.article_fk,
+        user_fk = statement.user_fk
     )
 
     db.add(statement_db)
@@ -34,14 +28,7 @@ def create_statement_service(db: Session, statement: CreateStatement):
     return statement_db
 
 
-def get_statements_by_article_id(db: Session, article_id: int):
-    article = db.query(ArticleSchema).filter(ArticleSchema.article_id == article_id).first()
-    return article.statements_foreign
+def get_statement_by_article_and_user_id(db: Session, page_id: int, user_id: str):
+    return db.query(ArticleSchema).filter(StatementSchema.article_fk == page_id).filter(StatementSchema.user_fk == user_id).all()
 
-
-def delete_by_article_id(db: Session, article_id: int):
-    statements = get_statements_by_article_id(db, article_id)
-
-    map(lambda x: db.query(StatementSchema).filter(StatementSchema.statement_id == x.statement_id).delete(), statements)
-
-    db.commit()
+# TODO: Create Delete statement by statement ID

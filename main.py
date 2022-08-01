@@ -6,8 +6,7 @@ from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
 from src.router import user, article
-from src.schemas.db_schemes import ArticleSchema, HolderSchema
-from src.services.holder import get_all_articles_holder_service
+from src.schemas.db_schemes import ArticleSchema
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,7 +29,7 @@ async def root():
 # TODO: Create a endpoint to set file in db
 # @app.get("/test")
 # def test(db: Session = Depends(get_db)):
-#     file = open("title_synopsis_article.csv", "r")
+#     file = open("title_synopsis_article2.csv", "r")
 
 #     csvreader = csv.reader(file)
 
@@ -39,10 +38,12 @@ async def root():
 #     data = []
 
 #     for row in csvreader:
-#         temp_data = HolderSchema(
-#             header = row[0],
-#             sub_header = row[1],
-#             news = row[2]
+#         temp_data = ArticleSchema(
+#             date = row[0],
+#             article_id = row[1],
+#             header = row[2],
+#             sub_header = row[3],
+#             news = row[4]
 #         )
 
 #         data.append(temp_data)

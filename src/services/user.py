@@ -36,3 +36,16 @@ def get_user_by_id(user_id: str, db: Session):
 
 def get_all_users(db: Session):
     return db.query(UserSchema).offset(0).limit(100).all()
+
+def set_last_marked_service(user_id: str, last_marked: int, db: Session):
+    user = get_user_by_id(user_id, db)
+
+    user.last_marked = last_marked
+    
+    db.commit()
+    db.refresh(user)
+
+def get_last_marked_service(user_id: str, db: Session):
+    user = get_user_by_id(user_id, db)
+
+    return user.last_marked

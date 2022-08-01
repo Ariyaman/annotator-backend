@@ -6,24 +6,16 @@ from src.models.statement import Statement
 
 class Article(BaseModel):
     article_id: int
+    page_id: int
+    date: str
     header: str
     sub_header: str
-    article: str
-    statements_foreign: list[Statement] = []
-    user_fk: str
-    status: bool
+    news: str
 
 
 class ArticleResponseBody(BaseModel):
     id: str
-    overallAnger: int
-    overallContempt: int
-    overallDisgust: int
-    overallFear: int
-    overallHappiness: int
-    overallNeutral: int
-    overallSadness: int
-    overallSentiment: int
-    overallSurprise: int
+    overallEmotion: str
+    overallSentiment: str
     empStatements: List
     user: str

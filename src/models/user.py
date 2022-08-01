@@ -24,6 +24,7 @@ class User(BaseModel):
     role: Optional[Roles] = None
     age: Optional[int] = None
     profession: Optional[str] = None
+    last_marked: Optional[int] = 0
 
 
 class UserCreate(User):

@@ -1,6 +1,4 @@
 from http import HTTPStatus
-from http.client import NOT_FOUND
-from re import S
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -9,16 +7,17 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import change_status_to_complete, get_all_articles_service, get_article_by_id_service, set_articles
-from src.services.statement import create_statement_service, get_statements_by_article_id
+from src.services.article import get_all_articles_service, get_article_by_id_service
+from src.services.statement import create_statement_service, get_statement_by_article_and_user_id
+from src.services.user import set_last_marked_service
 
 
 router = APIRouter()
 
 
-@router.get("/article/headers/{user_id}/{page}")
-def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
-    article_metadata = get_all_articles_service(db, user_id, (page - 1) * 10, 10)
+@router.get("/article/headers/{page}")
+def get_article_headers(page: int, db: Session = Depends(get_db)):
+    article_metadata = get_all_articles_service(db, (page - 1) * 10, 10)
 
     if(not article_metadata or article_metadata is None):
         return JSONResponse(jsonable_encoder({"msg": "Articles not found"}), HTTPStatus.NOT_FOUND)
@@ -28,9 +27,7 @@ def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
     for article in article_metadata:
         temp_data = {
             "header": article.header,
-            "sub_header": article.sub_header,
-            "status": article.status,
-            "article_id": article.article_id
+            "article_id": article.page_id,
         }
 
         compact_result.append(temp_data)
@@ -38,124 +35,73 @@ def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-@router.get("/article/{user_id}/{article_id}")
-def get_article_by_id(article_id: int, user_id: str, db: Session = Depends(get_db)):
-    article = get_article_by_id_service(db, article_id)
+@router.get("/article/{page_id}/{user_id}")
+def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
+    article = get_article_by_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
 
-    auth: bool = article.user_fk == user_id
-    statements = get_statements_by_article_id(db, article_id)
+    statements = get_statement_by_article_and_user_id(db, page_id, user_id)
+    print(statements)
 
     if not statements:
         statements = {}
-    elif auth == False:
-        return JSONResponse(jsonable_encoder({
-            "msg": "Unauthorized user"
-        }), HTTPStatus.UNAUTHORIZED)
     else:
         temp_statement = {}
         emp_statements = []
 
         for i in statements:
-            if(i.overall):
-                temp_statement["overallAnger"] = i.anger
-                temp_statement["overallContempt"] = i.contempt
-                temp_statement["overallDisgust"] = i.disgust
-                temp_statement["overallFear"] = i.fear
-                temp_statement["overallHappiness"] = i.happiness
-                temp_statement["overallNeutral"] = i.neutral
-                temp_statement["overallSadness"] = i.sadness
+            if(i.overall==True):
+                temp_statement["overallEmotion"] = i.emotion
                 temp_statement["overallSentiment"] = i.sentiment
-                temp_statement["overallSurprise"] = i.surprise
             else:
                 minor_statement = {}
-                minor_statement["anger"] = i.anger
                 minor_statement["company"] = i.company
-                minor_statement["contempt"] = i.contempt
-                minor_statement["disgust"] = i.disgust
-                minor_statement["fear"] = i.fear
-                minor_statement["happiness"] = i.happiness
-                minor_statement["neutral"] = i.neutral
-                minor_statement["sadness"] = i.sadness
+                minor_statement["emotion"] = i.emotion
                 minor_statement["sentence"] = i.sentence
                 minor_statement["sentiment"] = i.sentiment
-                minor_statement["surprise"] = i.surprise
 
                 emp_statements.append(minor_statement)
 
         temp_statement["empStatements"] = emp_statements
         statements = temp_statement
 
-    if(article is None):
-        return JSONResponse(jsonable_encoder({
-            "msg": "No articles found"
-            }),
-            HTTPStatus.NOT_FOUND
-    )
-    else:
-        return JSONResponse(jsonable_encoder({
-            "header": article.header,
-            "sub_header": article.sub_header,
-            "news": article.news,
-            "statements": statements,
-            "status": article.status
-            }),
-            HTTPStatus.OK
-        )
+    return JSONResponse(jsonable_encoder({
+        "header": article.header,
+        "sub_header": article.sub_header,
+        "news": article.news,
+        "statements": statements,
+    }), HTTPStatus.OK)
 
 
 @router.post("/mark_article")
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
-    article = get_article_by_id_service(db, int(response.id))
-
-    if(article.user_fk != response.user):
-        return JSONResponse(jsonable_encoder({
-            "msg": "User not authorized"
-    }), HTTPStatus.UNAUTHORIZED)
-
     overall_statement = CreateStatement(
-        anger=response.overallAnger,
-        contempt=response.overallContempt,
-        disgust=response.overallDisgust,
-        fear=response.overallFear,
-        happiness=response.overallHappiness,
-        neutral=response.overallNeutral,
-        sadness=response.overallSadness,
-        sentiment=response.overallSentiment,
-        surprise=response.overallSurprise,
-        overall=True,
-        article_fk=int(article.article_id)
+        overall = True,
+        emotion = response.overallEmotion,
+        sentiment = response.overallSentiment,
+        article_fk = int(response.id),
+        user_fk = response.user
     )
+
     create_statement_service(db, overall_statement)
 
     for i in response.empStatements:
-        print(i)
-        minor_statement = CreateStatement(
-            anger=i['anger'],
-            article_fk=int(article.article_id),
-            company=i['company'],
-            contempt=i['contempt'],
-            disgust=i['disgust'],
-            fear=i['fear'],
-            happiness=i['happiness'],
-            neutral=i['neutral'],
+        emp_statement = CreateStatement(
             overall=False,
-            sadness=i['sadness'],
+            article_fk=int(response.id),
+            company=i['company'],
+            emotion=i['emotion'],
             sentence=i['sentence'],
             sentiment=i['sentiment'],
-            surprise=i['surprise']
+            user_fk=response.user
         )
 
-        create_statement_service(db, minor_statement)
+        create_statement_service(db, emp_statement)
     
-    change_status_to_complete(db, int(article.article_id))
+    set_last_marked_service(response.user, int(response.id), db)
 
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
-
-@router.get("/populate_articles/{user_id}")
-def populate_articles(user_id: str, db: Session = Depends(get_db)):
-    set_articles(db, user_id)

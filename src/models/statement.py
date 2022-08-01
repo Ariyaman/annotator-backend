@@ -5,32 +5,20 @@ from pydantic import BaseModel
 
 class Statement(BaseModel):
     statment_id: Optional[UUID] = None
-    anger: int
-    contempt: int
-    disgust: int
-    fear: int
-    happiness: int
-    neutral: int
-    sadness: int
-    sentiment: int
-    surprise: int
+    emotion: str
+    sentiment: str
     overall: bool
     sentence: Optional[str] = None
     company: Optional[str] = None
     article_fk: str
+    user_fk: str
 
 
 class CreateStatement(BaseModel):
-    anger: int
-    contempt: int
-    disgust: int
-    fear: int
-    happiness: int
-    neutral: int
-    sadness: int
-    sentiment: int
-    surprise: int
     overall: bool
+    emotion: str
+    sentiment: str
     sentence: Optional[str] = None
     company: Optional[str] = None
     article_fk: str
+    user_fk: str
