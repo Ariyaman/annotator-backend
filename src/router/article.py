@@ -9,7 +9,6 @@ from src.models.statement import CreateStatement
 
 from src.services.article import get_all_articles_service, get_article_by_id_service
 from src.services.statement import create_statement_service, get_statement_by_article_and_user_id
-from src.services.user import set_last_marked_service
 
 
 router = APIRouter()
@@ -100,8 +99,6 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
 
         create_statement_service(db, emp_statement)
     
-    set_last_marked_service(response.user, int(response.id), db)
-
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
