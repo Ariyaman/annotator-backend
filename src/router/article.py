@@ -7,7 +7,7 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import get_all_articles_service, get_article_by_id_service
+from src.services.article import get_all_articles_service, get_article_by_page_id_service
 from src.services.statement import create_statement_service, get_statement_by_article_and_user_id
 
 
@@ -34,9 +34,10 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
+#TODO remove user_id dependency for fetching statements (Shatadru)
 @router.get("/article/{page_id}/{user_id}")
 def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
-    article = get_article_by_id_service(db, page_id)
+    article = get_article_by_page_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
@@ -73,7 +74,8 @@ def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = De
         "statements": statements,
     }), HTTPStatus.OK)
 
-
+#TODO given an article id mark status as true (integrate service)
+#TODO set article id in place of page_id(response.id)
 @router.post("/mark_article")
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     overall_statement = CreateStatement(
@@ -98,7 +100,9 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
         )
 
         create_statement_service(db, emp_statement)
-    
+
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
+
+#TODO add an api and service to count the number of articles with false status
