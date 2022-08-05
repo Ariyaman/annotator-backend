@@ -28,6 +28,7 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
         temp_data = {
             "header": article.header,
             "article_id": article.page_id,
+            "status": article.status
         }
 
         compact_result.append(temp_data)
