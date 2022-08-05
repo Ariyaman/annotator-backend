@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from database import get_db
-from src.services.user import create_user_service, get_last_marked_service, get_user_by_email, get_user_by_id
+from src.services.user import create_user_service, get_user_by_email, get_user_by_id
 
 from src.models.user import LoginUserBody, UserCreate
 
@@ -65,11 +65,3 @@ def get_role_by_id(user_id: str, db: Session = Depends(get_db)):
             "role": selected_user.role,
             "name": selected_user.name
         }))
-
-@router.get("/get_last_marked/{user_id}")
-def get_last_marked(user_id: str, db: Session = Depends(get_db)):
-    last_marked = get_last_marked_service(user_id, db)
-
-    return JSONResponse(jsonable_encoder({
-        "last_marked": last_marked
-    }), HTTPStatus.OK)

@@ -24,7 +24,6 @@ class User(BaseModel):
     role: Optional[Roles] = None
     age: Optional[int] = None
     profession: Optional[str] = None
-    last_marked: Optional[int] = 0
 
 
 class UserCreate(User):
@@ -34,17 +33,6 @@ class UserCreate(User):
     gender: str
     age: int
     profession: str
-
-
-class UserFetch(User):
-    name: str
-    email: str
-    gender: str
-    profession: str
-    age: int
-
-    class Config:
-        orm_mode = True
 
 
 class LoginUserBody(User):
