@@ -46,6 +46,7 @@ def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
         "header": article.header,
         "sub_header": article.sub_header,
         "news": article.news,
+        "status": article.status
     }), HTTPStatus.OK)
 
 
@@ -88,7 +89,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     }), HTTPStatus.CREATED)
 
 
-@router.get("/unmarked_articles")
+@router.get("/unmarked_articles_count")
 def count_unmarked_articles(db: Session = Depends(get_db)):
     article_count = count_articles_with_false_status_service(db)
 
