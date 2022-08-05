@@ -104,3 +104,5 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
+
+#TODO add an api and service to count the number of articles with false status
