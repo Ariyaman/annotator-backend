@@ -28,7 +28,5 @@ def create_statement_service(db: Session, statement: CreateStatement):
     return statement_db
 
 
-def get_statement_by_article_and_user_id(db: Session, page_id: int, user_id: str):
-    return db.query(StatementSchema).filter(StatementSchema.article_fk == page_id).filter(StatementSchema.user_fk == user_id).all()
-
-# TODO: Create Delete statement by statement ID
+def get_statement_by_article_id(db: Session, article_id: int):
+    return db.query(StatementSchema).filter(StatementSchema.article_fk == article_id).all()

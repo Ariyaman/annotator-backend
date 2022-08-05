@@ -8,7 +8,7 @@ from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
 from src.services.article import get_all_articles_service, get_article_by_page_id_service
-from src.services.statement import create_statement_service, get_statement_by_article_and_user_id
+from src.services.statement import create_statement_service, get_statement_by_article_id
 
 
 router = APIRouter()
@@ -34,44 +34,17 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-#TODO remove user_id dependency for fetching statements (Shatadru)
-@router.get("/article/{page_id}/{user_id}")
-def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
+@router.get("/article/{page_id}")
+def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
     article = get_article_by_page_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
 
-    statements = get_statement_by_article_and_user_id(db, page_id, user_id)
-    print(statements)
-
-    if not statements:
-        statements = {}
-    else:
-        temp_statement = {}
-        emp_statements = []
-
-        for i in statements:
-            if(i.overall==True):
-                temp_statement["overallEmotion"] = i.emotion
-                temp_statement["overallSentiment"] = i.sentiment
-            else:
-                minor_statement = {}
-                minor_statement["company"] = i.company
-                minor_statement["emotion"] = i.emotion
-                minor_statement["sentence"] = i.sentence
-                minor_statement["sentiment"] = i.sentiment
-
-                emp_statements.append(minor_statement)
-
-        temp_statement["empStatements"] = emp_statements
-        statements = temp_statement
-
     return JSONResponse(jsonable_encoder({
         "header": article.header,
         "sub_header": article.sub_header,
         "news": article.news,
-        "statements": statements,
     }), HTTPStatus.OK)
 
 #TODO given an article id mark status as true (integrate service)
