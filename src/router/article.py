@@ -34,7 +34,7 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-#TODO remove user_id dependency for fetching statements
+#TODO remove user_id dependency for fetching statements (Shatadru)
 @router.get("/article/{page_id}/{user_id}")
 def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
     article = get_article_by_page_id_service(db, page_id)
