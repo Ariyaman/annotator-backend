@@ -19,7 +19,7 @@ class User(BaseModel):
     user_id: Optional[UUID] = None
     name: Optional[str] = None
     email: str
-    hashed_password: str
+    password: str
     gender: Optional[Gender] = None
     role: Optional[Roles] = None
     age: Optional[int] = None
