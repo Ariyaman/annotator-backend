@@ -55,17 +55,17 @@ def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     returned_article = get_article_by_page_id_service(db, int(response.id))
 
-    if returned_article.status == True:
+    if returned_article.status:
         return JSONResponse(jsonable_encoder({
             "msg": "Article already marked"
         }), HTTPStatus.FORBIDDEN)
 
     overall_statement = CreateStatement(
-        overall = True,
-        emotion = response.overallEmotion,
-        sentiment = response.overallSentiment,
-        article_fk = returned_article.article_id,
-        user_fk = response.user
+        overall=True,
+        emotion=response.overallEmotion,
+        sentiment=response.overallSentiment,
+        article_fk=returned_article.article_id,
+        user_fk=response.user
     )
 
     create_statement_service(db, overall_statement)
@@ -82,7 +82,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
         )
 
         create_statement_service(db, emp_statement)
-    
+
     update_status_by_article_id_service(db, returned_article.article_id)
 
     return JSONResponse(jsonable_encoder({
