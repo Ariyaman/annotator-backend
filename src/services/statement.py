@@ -13,12 +13,12 @@ def create_statement_service(db: Session, statement: CreateStatement):
     statement_db = StatementSchema(
         statement_id=str(uuid4()),
         overall=statement.overall,
-        emotion = statement.emotion,
-        sentiment = statement.sentiment,
-        sentence = statement.sentence,
+        emotion=statement.emotion,
+        sentiment=statement.sentiment,
+        sentence=statement.sentence,
         company=statement.company,
         article_fk=statement.article_fk,
-        user_fk = statement.user_fk
+        user_fk=statement.user_fk
     )
 
     db.add(statement_db)

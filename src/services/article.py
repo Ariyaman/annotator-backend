@@ -1,4 +1,4 @@
-from sqlalchemy import true,false
+from sqlalchemy import true, false
 from sqlalchemy.orm import Session
 
 from src.schemas.db_schemes import ArticleSchema
