@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from http.client import OK
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -7,9 +8,8 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import get_all_articles_service, get_article_by_id_service
-from src.services.statement import create_statement_service, get_statement_by_article_and_user_id
-from src.services.user import set_last_marked_service
+from src.services.article import count_articles_with_false_status_service, get_all_articles_service, get_article_by_page_id_service, update_status_by_article_id_service
+from src.services.statement import create_statement_service
 
 
 router = APIRouter()
@@ -28,6 +28,7 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
         temp_data = {
             "header": article.header,
             "article_id": article.page_id,
+            "status": article.status
         }
 
         compact_result.append(temp_data)
@@ -35,54 +36,36 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-@router.get("/article/{page_id}/{user_id}")
-def get_article_by_page_and_user_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
-    article = get_article_by_id_service(db, page_id)
+@router.get("/article/{page_id}")
+def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
+    article = get_article_by_page_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
-
-    statements = get_statement_by_article_and_user_id(db, page_id, user_id)
-    print(statements)
-
-    if not statements:
-        statements = {}
-    else:
-        temp_statement = {}
-        emp_statements = []
-
-        for i in statements:
-            if(i.overall==True):
-                temp_statement["overallEmotion"] = i.emotion
-                temp_statement["overallSentiment"] = i.sentiment
-            else:
-                minor_statement = {}
-                minor_statement["company"] = i.company
-                minor_statement["emotion"] = i.emotion
-                minor_statement["sentence"] = i.sentence
-                minor_statement["sentiment"] = i.sentiment
-
-                emp_statements.append(minor_statement)
-
-        temp_statement["empStatements"] = emp_statements
-        statements = temp_statement
 
     return JSONResponse(jsonable_encoder({
         "header": article.header,
         "sub_header": article.sub_header,
         "news": article.news,
-        "statements": statements,
+        "status": article.status
     }), HTTPStatus.OK)
 
 
 @router.post("/mark_article")
 def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
+    returned_article = get_article_by_page_id_service(db, int(response.id))
+
+    if returned_article.status:
+        return JSONResponse(jsonable_encoder({
+            "msg": "Article already marked"
+        }), HTTPStatus.FORBIDDEN)
+
     overall_statement = CreateStatement(
-        overall = True,
-        emotion = response.overallEmotion,
-        sentiment = response.overallSentiment,
-        article_fk = int(response.id),
-        user_fk = response.user
+        overall=True,
+        emotion=response.overallEmotion,
+        sentiment=response.overallSentiment,
+        article_fk=returned_article.article_id,
+        user_fk=response.user
     )
 
     create_statement_service(db, overall_statement)
@@ -90,7 +73,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     for i in response.empStatements:
         emp_statement = CreateStatement(
             overall=False,
-            article_fk=int(response.id),
+            article_fk=returned_article.article_id,
             company=i['company'],
             emotion=i['emotion'],
             sentence=i['sentence'],
@@ -99,9 +82,18 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
         )
 
         create_statement_service(db, emp_statement)
-    
-    set_last_marked_service(response.user, int(response.id), db)
+
+    update_status_by_article_id_service(db, returned_article.article_id)
 
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
     }), HTTPStatus.CREATED)
+
+
+@router.get("/unmarked_articles_count")
+def count_unmarked_articles(db: Session = Depends(get_db)):
+    article_count = count_articles_with_false_status_service(db)
+
+    return JSONResponse(jsonable_encoder({
+        "article_count": article_count
+    }), HTTPStatus.OK)

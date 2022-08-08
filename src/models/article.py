@@ -11,6 +11,7 @@ class Article(BaseModel):
     header: str
     sub_header: str
     news: str
+    status: bool
 
 
 class ArticleResponseBody(BaseModel):

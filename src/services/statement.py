@@ -13,12 +13,12 @@ def create_statement_service(db: Session, statement: CreateStatement):
     statement_db = StatementSchema(
         statement_id=str(uuid4()),
         overall=statement.overall,
-        emotion = statement.emotion,
-        sentiment = statement.sentiment,
-        sentence = statement.sentence,
+        emotion=statement.emotion,
+        sentiment=statement.sentiment,
+        sentence=statement.sentence,
         company=statement.company,
         article_fk=statement.article_fk,
-        user_fk = statement.user_fk
+        user_fk=statement.user_fk
     )
 
     db.add(statement_db)
@@ -28,7 +28,6 @@ def create_statement_service(db: Session, statement: CreateStatement):
     return statement_db
 
 
-def get_statement_by_article_and_user_id(db: Session, page_id: int, user_id: str):
-    return db.query(ArticleSchema).filter(StatementSchema.article_fk == page_id).filter(StatementSchema.user_fk == user_id).all()
+def get_statement_by_article_id(db: Session, article_id: int):
+    return db.query(StatementSchema).filter(StatementSchema.article_fk == article_id).all()
 
-# TODO: Create Delete statement by statement ID
