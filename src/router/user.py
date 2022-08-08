@@ -74,5 +74,3 @@ def get_article_count_by_user_id(user_id: str, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({
         "count": total_marked_article_count
     }), HTTPStatus.OK)
-
-
