@@ -36,12 +36,15 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-@router.get("/article/{page_id}")
-def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
+@router.get("/article/{page_id}/{user_id}")
+def get_article_by_page_id(page_id: int, user_id: int, db: Session = Depends(get_db)):
     article = get_article_by_page_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
+
+    if(article.user_id == user_id):
+        return JSONResponse(jsonable_encoder({"msg": "Article belongs to different"}), HTTPStatus.UNAUTHORIZED)
 
     return JSONResponse(jsonable_encoder({
         "header": article.header,
