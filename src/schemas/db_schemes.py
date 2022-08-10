@@ -37,5 +37,5 @@ class StatementSchema(Base):
     sentiment = Column(String(20), index=True)
     sentence = Column(Text(length=2000), nullable=True, index=False)
     company = Column(String(200), nullable=True, index=True)
-    article_fk = Column(BigInteger, ForeignKey("articles.article_id"), index=True, nullable=False, unique=True)
-    user_fk = Column(String(40), ForeignKey("users.user_id"), index=True, nullable=False)
+    article_fk = Column(BigInteger, ForeignKey("articles.article_id"), index=True, nullable=False)
+    user_fk = Column(String(40), ForeignKey("users.user_id"), index=True)
