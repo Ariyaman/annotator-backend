@@ -19,3 +19,7 @@ def update_status_by_article_id_service(db: Session, article_id: int):
 
 def count_articles_with_false_status_service(db: Session):
     return db.query(ArticleSchema).filter(ArticleSchema.status == False).count()
+
+
+def count_articles_with_false_status_by_user_id_service(db: Session, user_id: str):
+    return db.query(ArticleSchema).filter(ArticleSchema.status == False, ArticleSchema.article_user == user_id).count()
