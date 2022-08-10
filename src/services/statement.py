@@ -28,7 +28,7 @@ def create_statement_service(db: Session, statement: CreateStatement):
     return statement_db
 
 
-def get_statement_by_article_id(db: Session, article_id: int,):
+def get_statement_by_article_id(db: Session, article_id: int):
     return db.query(StatementSchema).filter(StatementSchema.article_fk == article_id).all()
 
 
