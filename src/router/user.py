@@ -67,6 +67,7 @@ def get_role_by_id(user_id: str, db: Session = Depends(get_db)):
             "name": selected_user.name
         }))
 
+
 @router.get("/get_marked_article_count_by_id/{user_id}")
 def get_article_count_by_user_id(user_id: str, db: Session = Depends(get_db)):
     total_marked_article_count = get_statement_count_by_user_id_and_overall(db, user_id, True)

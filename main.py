@@ -29,7 +29,7 @@ async def root():
 # TODO: Create a endpoint to set file in db
 # @app.get("/test")
 # def test(db: Session = Depends(get_db)):
-#     file = open("title_synopsis_article2.csv", "r")
+#     file = open("test.csv", "r")
 
 #     csvreader = csv.reader(file)
 
