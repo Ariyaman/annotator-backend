@@ -25,6 +25,7 @@ class ArticleSchema(Base):
     sub_header = Column(Text(length=1000), index=False)
     news = Column(Text(length=33000), index=False)
     status = Column(Boolean, index=True, default=False)
+    article_user = Column(String(40), ForeignKey("users.user_id"), index=True, nullable=False)
 
 
 class StatementSchema(Base):
