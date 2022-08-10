@@ -93,15 +93,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     }), HTTPStatus.CREATED)
 
 
-@router.get("/unmarked_articles_count")
-def count_unmarked_articles(db: Session = Depends(get_db)):
-    article_count = count_articles_with_false_status_service(db)
-
-    return JSONResponse(jsonable_encoder({
-        "article_count": article_count
-    }), HTTPStatus.OK)
-
-@router.get("/unmarked_article_count/${user_id}")
+@router.get("/unmarked_articles_count/{user_id}")
 def count_unmarked_articles_by_user_id(user_id: str, db: Session = Depends(get_db)):
     article_count = count_articles_with_false_status_by_user_id_service(db, user_id)
 
