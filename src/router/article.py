@@ -8,16 +8,16 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import count_articles_with_false_status_service, get_all_articles_service, get_article_by_page_id_service, update_status_by_article_id_service
+from src.services.article import count_articles_with_false_status_by_user_id_service, get_all_articles_by_user_id_service, get_article_by_page_id_service, update_status_by_article_id_service
 from src.services.statement import create_statement_service
 
 
 router = APIRouter()
 
 
-@router.get("/article/headers/{page}")
-def get_article_headers(page: int, db: Session = Depends(get_db)):
-    article_metadata = get_all_articles_service(db, (page - 1) * 10, 10)
+@router.get("/article/headers/{page}/{user_id}")
+def get_article_headers(page: int, user_id: str, db: Session = Depends(get_db)):
+    article_metadata = get_all_articles_by_user_id_service(db, user_id, (page - 1) * 10, 10)
 
     if(not article_metadata or article_metadata is None):
         return JSONResponse(jsonable_encoder({"msg": "Articles not found"}), HTTPStatus.NOT_FOUND)
@@ -36,12 +36,15 @@ def get_article_headers(page: int, db: Session = Depends(get_db)):
     return JSONResponse(jsonable_encoder({"page": compact_result}), HTTPStatus.OK)
 
 
-@router.get("/article/{page_id}")
-def get_article_by_page_id(page_id: int, db: Session = Depends(get_db)):
+@router.get("/article/{page_id}/{user_id}")
+def get_article_by_page_id(page_id: int, user_id: str, db: Session = Depends(get_db)):
     article = get_article_by_page_id_service(db, page_id)
 
     if(article is None):
         return JSONResponse(jsonable_encoder({"msg": "Article does not exist"}), HTTPStatus.NOT_FOUND)
+
+    if(article.article_user != user_id):
+        return JSONResponse(jsonable_encoder({"msg": "Article belongs to different user"}), HTTPStatus.UNAUTHORIZED)
 
     return JSONResponse(jsonable_encoder({
         "header": article.header,
@@ -90,9 +93,9 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
     }), HTTPStatus.CREATED)
 
 
-@router.get("/unmarked_articles_count")
-def count_unmarked_articles(db: Session = Depends(get_db)):
-    article_count = count_articles_with_false_status_service(db)
+@router.get("/unmarked_articles_count/{user_id}")
+def count_unmarked_articles_by_user_id(user_id: str, db: Session = Depends(get_db)):
+    article_count = count_articles_with_false_status_by_user_id_service(db, user_id)
 
     return JSONResponse(jsonable_encoder({
         "article_count": article_count

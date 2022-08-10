@@ -1,8 +1,6 @@
 from typing import List
 from pydantic import BaseModel
 
-from src.models.statement import Statement
-
 
 class Article(BaseModel):
     article_id: int
@@ -12,6 +10,7 @@ class Article(BaseModel):
     sub_header: str
     news: str
     status: bool
+    article_user: str
 
 
 class ArticleResponseBody(BaseModel):

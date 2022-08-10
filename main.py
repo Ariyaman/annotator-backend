@@ -37,13 +37,16 @@ async def root():
 
 #     data = []
 
+#     user_id = ""
+
 #     for row in csvreader:
 #         temp_data = ArticleSchema(
 #             date = row[0],
 #             article_id = row[1],
 #             header = row[2],
 #             sub_header = row[3],
-#             news = row[4]
+#             news = row[4],
+#             article_user = user_id
 #         )
 
 #         data.append(temp_data)
