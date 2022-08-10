@@ -18,7 +18,7 @@ class UserSchema(Base):
 class ArticleSchema(Base):
     __tablename__ = "articles"
 
-    article_id = Column(BigInteger, index=True, unique=True)
+    article_id = Column(BigInteger, index=True, unique=False, nullable=False)
     page_id = Column(Integer, index=True, primary_key=True)
     date = Column(Date, index=True)
     header = Column(Text(length=300), index=False)
