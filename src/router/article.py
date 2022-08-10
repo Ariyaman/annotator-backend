@@ -15,9 +15,9 @@ from src.services.statement import create_statement_service
 router = APIRouter()
 
 
-@router.get("/article/headers/{page}")
-def get_article_headers(page: int, db: Session = Depends(get_db)):
-    article_metadata = get_all_articles_service(db, (page - 1) * 10, 10)
+@router.get("/article/headers/{page}/{user_id}")
+def get_article_headers(page: int, user_id: int, db: Session = Depends(get_db)):
+    article_metadata = get_all_articles_service(db, user_id, (page - 1) * 10, 10)
 
     if(not article_metadata or article_metadata is None):
         return JSONResponse(jsonable_encoder({"msg": "Articles not found"}), HTTPStatus.NOT_FOUND)

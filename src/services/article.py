@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from src.schemas.db_schemes import ArticleSchema
 
 
-def get_all_articles_service(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(ArticleSchema).order_by(ArticleSchema.status).offset(skip).limit(limit).all()
+def get_all_articles_service(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(ArticleSchema).filter(ArticleSchema.user_id == user_id) \
+        .order_by(ArticleSchema.status).offset(skip).limit(limit).all()
 
 
 def get_article_by_page_id_service(db: Session, page_id: int):
