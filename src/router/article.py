@@ -8,7 +8,7 @@ from database import get_db
 from src.models.article import ArticleResponseBody
 from src.models.statement import CreateStatement
 
-from src.services.article import count_articles_with_false_status_service, get_all_articles_by_user_id_service, get_article_by_page_id_service, update_status_by_article_id_service
+from src.services.article import count_articles_with_false_status_by_user_id_service, count_articles_with_false_status_service, get_all_articles_by_user_id_service, get_article_by_page_id_service, update_status_by_article_id_service
 from src.services.statement import create_statement_service
 
 
@@ -96,6 +96,14 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
 @router.get("/unmarked_articles_count")
 def count_unmarked_articles(db: Session = Depends(get_db)):
     article_count = count_articles_with_false_status_service(db)
+
+    return JSONResponse(jsonable_encoder({
+        "article_count": article_count
+    }), HTTPStatus.OK)
+
+@router.get("/unmarked_article_count/${user_id}")
+def count_unmarked_articles_by_user_id(user_id: str, db: Session = Depends(get_db)):
+    article_count = count_articles_with_false_status_by_user_id_service(db, user_id)
 
     return JSONResponse(jsonable_encoder({
         "article_count": article_count
