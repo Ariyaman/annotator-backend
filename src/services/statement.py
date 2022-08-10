@@ -28,6 +28,11 @@ def create_statement_service(db: Session, statement: CreateStatement):
     return statement_db
 
 
-def get_statement_by_article_id(db: Session, article_id: int):
+def get_statement_by_article_id(db: Session, article_id: int,):
     return db.query(StatementSchema).filter(StatementSchema.article_fk == article_id).all()
 
+
+def get_statement_count_by_user_id_and_overall(db: Session, user_id: int, overall: bool):
+    return db.query(StatementSchema) \
+        .filter(StatementSchema.user_fk == user_id, StatementSchema.overall == overall) \
+        .count()
