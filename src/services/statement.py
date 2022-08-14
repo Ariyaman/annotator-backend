@@ -36,3 +36,7 @@ def get_statement_count_by_user_id_and_overall(db: Session, user_id: int, overal
     return db.query(StatementSchema) \
         .filter(StatementSchema.user_fk == user_id, StatementSchema.overall == overall) \
         .count()
+
+
+def get_statements_by_user_id_service(db: Session, user_id: str):
+    return db.query(StatementSchema).filter(StatementSchema.user_fk == user_id).all()
