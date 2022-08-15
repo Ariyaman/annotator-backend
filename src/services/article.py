@@ -12,8 +12,9 @@ def get_article_by_page_id_service(db: Session, page_id: int):
     return db.query(ArticleSchema).filter(ArticleSchema.page_id == page_id).first()
 
 
-def update_status_by_article_id_service(db: Session, article_id: int):
-    db.query(ArticleSchema).filter(ArticleSchema.article_id == article_id).update({ArticleSchema.status: True})
+def update_status_by_article_id_service(db: Session, article_id: int, user_id: str):
+    db.query(ArticleSchema).filter(ArticleSchema.article_id == article_id).filter(
+        ArticleSchema.article_user == user_id).update({ArticleSchema.status: True})
     db.commit()
 
 

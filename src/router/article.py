@@ -86,7 +86,7 @@ def mark_article(response: ArticleResponseBody, db: Session = Depends(get_db)):
 
         create_statement_service(db, emp_statement)
 
-    update_status_by_article_id_service(db, returned_article.article_id)
+    update_status_by_article_id_service(db, returned_article.article_id, response.user)
 
     return JSONResponse(jsonable_encoder({
         "msg": "Article marked"
