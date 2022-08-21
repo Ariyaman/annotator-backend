@@ -86,11 +86,15 @@ def get_statement_csv_by_user_id(user_id: str, db: Session = Depends(get_db)):
         statement_records = get_statements_by_user_id_service(db, user_id)
         user_record = get_user_by_id(user_id, db)
 
-        csv_statement_name = f"{user_record.name}.csv"
-        output_csv_file = open(csv_statement_name, "w")
+        csv_statement_name = f"{user_record.name}".replace(' ', '_')
+        csv_statement_file = f"{csv_statement_name}.csv"
+        output_csv_file = open(csv_statement_file, "w")
         csv_output = csv.writer(output_csv_file)
 
-        csv_output.writerow(StatementSchema.__table__.columns.keys())
+        statement_keys_list = StatementSchema.__table__.columns.keys()
+        statement_keys_list.pop()
+
+        csv_output.writerow(statement_keys_list)
 
         for statement in statement_records:
 
@@ -101,11 +105,11 @@ def get_statement_csv_by_user_id(user_id: str, db: Session = Depends(get_db)):
                 statement.company = "*"
 
             csv_output.writerow([statement.statement_id, statement.overall, statement.emotion, statement.sentiment,
-            statement.sentence, statement.company, statement.article_fk, statement.user_fk])
+            statement.sentence, statement.company, statement.article_fk])
 
         output_csv_file.close()
 
-        return FileResponse(csv_statement_name)
+        return FileResponse(path=csv_statement_file, filename=csv_statement_file)
     except BaseException:
         return JSONResponse(jsonable_encoder({
             "msg": "Error while processing csv file"
